@@ -6,16 +6,19 @@ use App\Models\ResearchGapAnalysis;
 use App\Models\SearchHistory;
 use App\Services\ActivityLogger;
 use App\Services\AiClientService;
+use App\Services\GapAnalysisTranslationService;
 use App\Services\ResearchGapService;
 use App\Services\SystemLogger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ResearchGapController extends Controller
 {
     public function __construct(
         protected ResearchGapService $gapService,
         protected AiClientService $ai,
-    ) {}
+    ) {
+    }
 
     /**
      * GET /api/research-gaps/status
@@ -117,5 +120,26 @@ class ResearchGapController extends Controller
         }
 
         return response()->json($researchGapAnalysis);
+    }
+
+    public function translate(Request $request, ResearchGapAnalysis $gapAnalysis)
+    {
+        if ($gapAnalysis->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Not found'], 404);
+        }
+
+        $request->validate([
+            'language' => 'required|string|in:si,ta,hi,es,fr,de,zh,ja,ar',
+        ]);
+
+        $lang = $request->input('language');
+
+        // Cache translations so repeat requests don't re-hit the AI provider
+        $cacheKey = "gap_analysis:{$gapAnalysis->id}:translate:{$lang}";
+        $translated = Cache::remember($cacheKey, now()->addDays(30), function () use ($gapAnalysis, $lang) {
+            return app(GapAnalysisTranslationService::class)->translate($gapAnalysis, $lang);
+        });
+
+        return response()->json($translated);
     }
 }
