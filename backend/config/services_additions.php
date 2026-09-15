@@ -16,4 +16,10 @@ return [
         'key' => env('SERPAPI_KEY'),
     ],
 
+    'ai' => [
+        'provider' => env('AI_PROVIDER', 'openai'), // openai | anthropic | gemini
+        'key' => env('AI_API_KEY'),
+        'model' => env('AI_MODEL'),
+    ],
+
 ];
