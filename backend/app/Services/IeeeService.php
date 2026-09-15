@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Services\SystemLogger;
 
 class IeeeService
 {
@@ -34,6 +35,7 @@ class IeeeService
 
             if (!$response->successful()) {
                 Log::warning('IEEE request failed', ['status' => $response->status()]);
+                SystemLogger::warning('IEEE Xplore request failed', ['status' => $response->status(), 'query' => $query]);
                 return [];
             }
 
@@ -53,6 +55,7 @@ class IeeeService
             })->filter(fn ($p) => !empty($p['url']))->values()->all();
         } catch (\Throwable $e) {
             Log::error('IeeeService error: ' . $e->getMessage());
+            SystemLogger::error('IEEE Xplore service exception', ['message' => $e->getMessage(), 'query' => $query]);
             return [];
         }
     }

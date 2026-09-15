@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Services\SystemLogger;
 
 class SemanticScholarService
 {
@@ -24,6 +25,7 @@ class SemanticScholarService
 
             if (!$response->successful()) {
                 Log::warning('SemanticScholar request failed', ['status' => $response->status()]);
+                SystemLogger::warning('Semantic Scholar request failed', ['status' => $response->status(), 'query' => $query]);
                 return [];
             }
 
@@ -45,6 +47,7 @@ class SemanticScholarService
             })->filter(fn ($p) => !empty($p['url']))->values()->all();
         } catch (\Throwable $e) {
             Log::error('SemanticScholarService error: ' . $e->getMessage());
+            SystemLogger::error('Semantic Scholar service exception', ['message' => $e->getMessage(), 'query' => $query]);
             return [];
         }
     }

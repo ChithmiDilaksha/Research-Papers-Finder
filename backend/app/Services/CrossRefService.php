@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Services\SystemLogger;
 
 class CrossRefService
 {
@@ -24,6 +25,7 @@ class CrossRefService
 
             if (!$response->successful()) {
                 Log::warning('CrossRef request failed', ['status' => $response->status()]);
+                SystemLogger::warning('CrossRef request failed', ['status' => $response->status(), 'query' => $query]);
                 return [];
             }
 
@@ -47,6 +49,7 @@ class CrossRefService
             })->filter(fn ($p) => !empty($p['url']))->values()->all();
         } catch (\Throwable $e) {
             Log::error('CrossRefService error: ' . $e->getMessage());
+            SystemLogger::error('CrossRef service exception', ['message' => $e->getMessage(), 'query' => $query]);
             return [];
         }
     }

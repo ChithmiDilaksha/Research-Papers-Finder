@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Services\SystemLogger;
 
 class GoogleScholarService
 {
@@ -33,6 +34,7 @@ class GoogleScholarService
 
             if (!$response->successful()) {
                 Log::warning('Google Scholar (SerpApi) request failed', ['status' => $response->status()]);
+                SystemLogger::warning('Google Scholar (SerpApi) request failed', ['status' => $response->status(), 'query' => $query]);
                 return [];
             }
 
@@ -54,6 +56,7 @@ class GoogleScholarService
             })->filter(fn ($p) => !empty($p['url']))->values()->all();
         } catch (\Throwable $e) {
             Log::error('GoogleScholarService error: ' . $e->getMessage());
+            SystemLogger::error('Google Scholar service exception', ['message' => $e->getMessage(), 'query' => $query]);
             return [];
         }
     }

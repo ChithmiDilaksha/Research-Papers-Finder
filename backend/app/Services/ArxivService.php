@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Services\SystemLogger;
 
 class ArxivService
 {
@@ -26,6 +27,7 @@ class ArxivService
 
             if (!$response->successful()) {
                 Log::warning('arXiv request failed', ['status' => $response->status()]);
+                SystemLogger::warning('arXiv request failed', ['status' => $response->status(), 'query' => $query]);
                 return [];
             }
 
@@ -70,6 +72,7 @@ class ArxivService
             return $results;
         } catch (\Throwable $e) {
             Log::error('ArxivService error: ' . $e->getMessage());
+            SystemLogger::error('arXiv service exception', ['message' => $e->getMessage(), 'query' => $query]);
             return [];
         }
     }
