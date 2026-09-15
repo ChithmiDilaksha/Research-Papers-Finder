@@ -10,10 +10,7 @@ class CrossRefService
 {
     protected string $baseUrl = 'https://api.crossref.org/works';
 
-    /**
-     * Search papers via CrossRef (free, no API key required).
-     * Docs: https://api.crossref.org/swagger-ui/index.html
-     */
+
     public function search(string $query, int $limit = 10): array
     {
         try {
