@@ -1,21 +1,26 @@
-import { useState } from 'react'
-
-const SOURCES = [
-  { id: 'semantic_scholar', label: 'Semantic Scholar' },
-  { id: 'crossref', label: 'CrossRef' },
-  { id: 'arxiv', label: 'arXiv' },
-  { id: 'ieee', label: 'IEEE Xplore' },
-  { id: 'google_scholar', label: 'Google Scholar' },
-]
+import { useEffect, useState } from 'react'
+import { fetchSources } from '../api'
 
 export default function SearchForm({ onSearch, loading }) {
   const [prompt, setPrompt] = useState('')
   const [limit, setLimit] = useState(10)
-  const [sources, setSources] = useState(SOURCES.map((s) => s.id))
+  const [availableSources, setAvailableSources] = useState([])
+  const [sources, setSources] = useState([])
+  const [sourcesLoading, setSourcesLoading] = useState(true)
 
-  function toggleSource(id) {
+  useEffect(() => {
+    fetchSources()
+      .then((data) => {
+        setAvailableSources(data)
+        setSources(data.map((s) => s.key)) // all active sources selected by default
+      })
+      .catch(() => setAvailableSources([]))
+      .finally(() => setSourcesLoading(false))
+  }, [])
+
+  function toggleSource(key) {
     setSources((prev) =>
-      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
+      prev.includes(key) ? prev.filter((s) => s !== key) : [...prev, key]
     )
   }
 
@@ -52,14 +57,14 @@ export default function SearchForm({ onSearch, loading }) {
           <input
             type="range"
             min={1}
-            max={50}
+            max={100}
             value={limit}
             onChange={(e) => setLimit(Number(e.target.value))}
             className="w-full accent-brand-600"
           />
           <div className="flex justify-between text-xs text-slate-400 mt-1">
             <span>1</span>
-            <span>50</span>
+            <span>100</span>
           </div>
         </div>
 
@@ -67,28 +72,38 @@ export default function SearchForm({ onSearch, loading }) {
           <label className="block text-sm font-semibold text-brand-800 mb-2">
             Sources to search
           </label>
-          <div className="flex flex-wrap gap-2">
-            {SOURCES.map((s) => (
-              <button
-                type="button"
-                key={s.id}
-                onClick={() => toggleSource(s.id)}
-                className={`px-3 py-1.5 rounded-full text-sm border transition ${
-                  sources.includes(s.id)
-                    ? 'bg-brand-600 text-white border-brand-600'
-                    : 'bg-white text-slate-500 border-slate-200 hover:border-brand-300'
-                }`}
-              >
-                {s.label}
-              </button>
-            ))}
-          </div>
+
+          {sourcesLoading ? (
+            <p className="text-sm text-slate-400">Loading sources…</p>
+          ) : availableSources.length === 0 ? (
+            <p className="text-sm text-slate-400">
+              No sources configured yet — ask an admin to add some under "Sources Master".
+            </p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {availableSources.map((s) => (
+                <button
+                  type="button"
+                  key={s.key}
+                  title={s.description || ''}
+                  onClick={() => toggleSource(s.key)}
+                  className={`px-3 py-1.5 rounded-full text-sm border transition ${
+                    sources.includes(s.key)
+                      ? 'bg-brand-600 text-white border-brand-600'
+                      : 'bg-white text-slate-500 border-slate-200 hover:border-brand-300'
+                  }`}
+                >
+                  {s.name}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
       <button
         type="submit"
-        disabled={loading}
+        disabled={loading || sourcesLoading}
         className="w-full md:w-auto px-8 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold shadow-sm transition"
       >
         {loading ? 'Searching…' : 'Find Research Papers'}
