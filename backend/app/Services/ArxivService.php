@@ -10,10 +10,6 @@ class ArxivService
 {
     protected string $baseUrl = 'http://export.arxiv.org/api/query';
 
-    /**
-     * Search papers via arXiv (free, no API key required).
-     * Docs: https://info.arxiv.org/help/api/index.html
-     */
     public function search(string $query, int $limit = 10): array
     {
         try {
