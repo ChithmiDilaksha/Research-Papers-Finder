@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\LogController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\PaperSearchController;
+use App\Http\Controllers\ResearchGapController;
 use App\Http\Controllers\SearchHistoryController;
 use App\Http\Controllers\SourceController;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +31,12 @@ Route::middleware('auth:sanctum')->group(function () {
     // A logged-in user's own search prompts + the papers found for them.
     Route::get('/search-history', [SearchHistoryController::class, 'index']);
     Route::get('/search-history/{searchHistory}', [SearchHistoryController::class, 'show']);
+
+    // AI Research Gap Finder
+    Route::get('/research-gaps/status', [ResearchGapController::class, 'status']);
+    Route::post('/research-gaps', [ResearchGapController::class, 'analyze']);
+    Route::get('/research-gaps', [ResearchGapController::class, 'index']);
+    Route::get('/research-gaps/{researchGapAnalysis}', [ResearchGapController::class, 'show']);
 });
 
 // ---- Admin only ----

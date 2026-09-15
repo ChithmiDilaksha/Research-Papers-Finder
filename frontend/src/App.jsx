@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import SearchPage from './pages/SearchPage'
 import HistoryPage from './pages/HistoryPage'
+import ResearchGapPage from './pages/ResearchGapPage'
 import AdminSourcesPage from './pages/AdminSourcesPage'
 import AdminLogsPage from './pages/AdminLogsPage'
 
@@ -30,6 +31,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <HistoryPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/research-gaps"
+          element={
+            <ProtectedRoute>
+              <ResearchGapPage />
             </ProtectedRoute>
           }
         />

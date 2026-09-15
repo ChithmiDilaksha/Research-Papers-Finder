@@ -24,6 +24,7 @@ export default function Navbar() {
           <div className="flex items-center gap-2">
             <NavLink to="/" end className={linkClass}>Search</NavLink>
             <NavLink to="/history" className={linkClass}>My History</NavLink>
+            <NavLink to="/research-gaps" className={linkClass}>🔎 Research Gaps</NavLink>
             {user.is_admin && (
               <>
                 <NavLink to="/admin/sources" className={linkClass}>Sources Master</NavLink>
