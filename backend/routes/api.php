@@ -28,6 +28,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // when picking which databases to search.
     Route::get('/sources', [SourceController::class, 'index']);
 
+    Route::post('/research-gaps/{gapAnalysis}/translate', [ResearchGapController::class, 'translate']);
+
     // A logged-in user's own search prompts + the papers found for them.
     Route::get('/search-history', [SearchHistoryController::class, 'index']);
     Route::get('/search-history/{searchHistory}', [SearchHistoryController::class, 'show']);

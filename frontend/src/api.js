@@ -40,7 +40,8 @@ export const fetchGapAnalyses = (page = 1) =>
   api.get(`/research-gaps?page=${page}`).then((r) => r.data)
 export const fetchGapAnalysisDetail = (id) =>
   api.get(`/research-gaps/${id}`).then((r) => r.data)
-
+export const translateGapAnalysis = (id, lang) =>
+  api.post(`/research-gaps/${id}/translate`, { language: lang }).then((r) => r.data)
 // ---- Admin: sources master CRUD ----
 export const fetchAdminSources = () => api.get('/admin/sources').then((r) => r.data)
 export const createSource = (data) => api.post('/admin/sources', data).then((r) => r.data)
